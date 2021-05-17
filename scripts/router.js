@@ -2,11 +2,41 @@
 
 export const router = {};
 
+export const state = {
+  SETTINGS: 'settings',
+  HOME: 'home',
+  SINGLE_PAGE: 'single-entry',
+}
+
+const statesData = {
+  'home' : {
+    id: 1,
+    classList: "",
+    url: "/#home",
+    title: "Journal Entries",
+  },
+  'settings' : {
+    id: 2,
+    classList: "settings",
+    url: "/#settings",
+    title: "Settings"
+  },
+  'single-entry':{
+    id: 3,
+    classList: "single-entry",
+    url: '/#entry',
+    title: "Entry"
+  }
+}
+
+const idPageMap = (i) => {
+  const map = [state.HOME, state.SETTINGS, state.SINGLE_PAGE];
+  return map[i-1]
+}
 /**
  * Changes the "page" (state) that your SPA app is currently set to
  */
-router.setState = function() {
-  /**
+/**
    * - There are three states that your SPA app will have
    *    1. The home page
    *    2. The entry page (showing one individual entry)
@@ -35,4 +65,24 @@ router.setState = function() {
    *    1. You may add as many helper functions in this file as you like
    *    2. You may modify the parameters of setState() as much as you like
    */
+const bodyElement = document.querySelector("body")
+const pageTitle = document.querySelector("header > h1");
+
+router.setState = function(newState, id=null) {
+  bodyElement.classList = statesData[newState].classList;
+
+  if (newState == state.SINGLE_PAGE){
+    pageTitle.innerHTML = `${statesData[newState].title} ${id}`
+    window.history.pushState({page_id: statesData[newState].id}, '', `${statesData[newState].url}${id}`);
+    return;
+  }
+  pageTitle.innerHTML = statesData[newState].title;
+  window.history.pushState({page_id: statesData[newState].id}, '', statesData[newState].url);
+}
+
+window.onpopstate = (event) => {
+  let defaultID = !(event.state)
+  bodyElement.classList = statesData[idPageMap(defaultID ? statesData[state.HOME].id : event.state.page_id)].classList;
+  pageTitle.innerHTML = defaultID ? statesData[state.HOME].title : statesData[idPageMap(event.state.page_id)].title;
+
 }

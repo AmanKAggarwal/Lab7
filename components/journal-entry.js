@@ -72,6 +72,7 @@ class JournalEntry extends HTMLElement {
       'title': this.shadowRoot.querySelector('.entry-title').innerText,
       'date': this.shadowRoot.querySelector('.entry-date').innerText,
       'content': this.shadowRoot.querySelector('.entry-content').innerText,
+      'id' : this.id,
     };
 
     if (this.shadowRoot.querySelector('.entry-image')) {
