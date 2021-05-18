@@ -8,23 +8,24 @@ export const state = {
   SINGLE_PAGE: 'single-entry',
 }
 
+let baseURL = "";
 const statesData = {
   'home' : {
     id: 1,
     classList: "",
-    url: "/#home",
+    urlSuffix: "",
     title: "Journal Entries",
   },
   'settings' : {
     id: 2,
     classList: "settings",
-    url: "/#settings",
+    urlSuffix: "/#settings",
     title: "Settings"
   },
   'single-entry':{
     id: 3,
     classList: "single-entry",
-    url: '/#entry',
+    urlSuffix: '/#entry',
     title: "Entry"
   }
 }
@@ -69,20 +70,22 @@ const bodyElement = document.querySelector("body")
 const pageTitle = document.querySelector("header > h1");
 
 router.setState = function(newState, id=null) {
+  if (!baseURL) baseURL = window.location.href;
+
+  console.log("Base URL", baseURL)
   bodyElement.classList = statesData[newState].classList;
 
   if (newState == state.SINGLE_PAGE){
     pageTitle.innerHTML = `${statesData[newState].title} ${id}`
-    window.history.pushState({page_id: statesData[newState].id}, '', `${statesData[newState].url}${id}`);
+    window.history.pushState({page_id: statesData[newState].id}, '', `${baseURL + statesData[newState].urlSuffix}${id}`);
     return;
   }
   pageTitle.innerHTML = statesData[newState].title;
-  window.history.pushState({page_id: statesData[newState].id}, '', statesData[newState].url);
+  window.history.pushState({page_id: statesData[newState].id}, '', baseURL + statesData[newState].urlSuffix);
 }
 
 window.onpopstate = (event) => {
   let defaultID = !(event.state)
   bodyElement.classList = statesData[idPageMap(defaultID ? statesData[state.HOME].id : event.state.page_id)].classList;
   pageTitle.innerHTML = defaultID ? statesData[state.HOME].title : statesData[idPageMap(event.state.page_id)].title;
-
 }
